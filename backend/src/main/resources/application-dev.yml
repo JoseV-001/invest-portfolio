@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/invest_db}
+    username: ${SPRING_DATASOURCE_USERNAME:invest_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:invest_secure_pwd}
+    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    com.invest: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN

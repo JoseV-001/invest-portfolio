@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: invest-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: invest_db
+      POSTGRES_USER: invest_user
+      POSTGRES_PASSWORD: invest_secure_pwd
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U invest_user -d invest_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invest-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: invest-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - invest-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: invest-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/invest_db
+      SPRING_DATASOURCE_USERNAME: invest_user
+      SPRING_DATASOURCE_PASSWORD: invest_secure_pwd
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      BRAPI_API_TOKEN: ${BRAPI_API_TOKEN:-}
+    networks:
+      - invest-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: invest-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+    networks:
+      - invest-net
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  invest-net:
+    driver: bridge

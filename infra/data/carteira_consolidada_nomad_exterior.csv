@@ -1,0 +1,17 @@
+Data,Tipo,Ticker,Nome,Operacao,Valor_Atual_USD,Rendimento_USD,Custo_Estimado_USD,Corretora
+15/01/2026,ETF,SCHD,Schwab US Dividend Equity ETF,Compra,305.00,25.00,280.00,Nomad
+15/01/2026,ETF,VOO,Vanguard S&P 500 ETF,Compra,654.00,54.00,600.00,Nomad
+15/01/2026,ETF,QQQ,Invesco QQQ Trust Series 1,Compra,416.00,32.00,384.00,Nomad
+15/01/2026,ETF,DHS,WisdomTree U.S. High Dividend Fund,Compra,193.00,13.00,180.00,Nomad
+15/01/2026,ETF,SPHD,Invesco S&P 500 High Dividend Low Volatility,Compra,193.00,13.00,180.00,Nomad
+15/01/2026,ETF,QYLD,Global X NASDAQ 100 Covered Call ETF,Compra,144.00,4.00,140.00,Nomad
+15/01/2026,ETF,IAU,iShares Gold Trust,Compra,165.00,15.00,150.00,Nomad
+15/01/2026,ETF,TFLO,iShares Treasury Floating Rate Bond ETF,Compra,151.20,1.20,150.00,Nomad
+15/01/2026,REIT,O,Realty Income Corporation,Compra,203.00,7.00,196.00,Nomad
+15/01/2026,REIT,STAG,STAG Industrial Inc,Compra,154.00,10.00,144.00,Nomad
+15/01/2026,Ações,MAIN,Main Street Capital Corporation,Compra,130.00,10.00,120.00,Nomad
+15/01/2026,Ações,AAPL,Apple Inc,Compra,183.00,18.00,165.00,Nomad
+15/01/2026,Ações,KO,The Coca-Cola Company,Compra,138.00,8.00,130.00,Nomad
+15/01/2026,Ações,UNH,UnitedHealth Group Inc,Compra,135.00,5.00,130.00,Nomad
+15/01/2026,Ações,NVDA,Nvidia Corp,Compra,148.00,18.00,130.00,Nomad
+15/01/2026,Ações,ANET,Arista Networks Inc,Compra,115.00,15.00,100.00,Nomad

@@ -1,0 +1,15 @@
+Data,Tipo,Ticker,Nome,Operacao,Quantidade,Preco_Medio,Valor_Total_Investido,Cotacao_Atual,Valor_Atual,Rentabilidade,Corretora
+15/01/2026,FII,MXRF11,Maxi Renda FII,Compra,120,10.00,1200.00,10.25,1230.00,30.00,Inter DTVM
+15/01/2026,FII,KNCR11,Kinea Rendimentos Imobiliarios FII,Compra,10,102.00,1020.00,104.50,1045.00,25.00,Inter DTVM
+15/01/2026,Ações,ITSA4,Itausa S.A. PN,Compra,80,10.50,840.00,11.20,896.00,56.00,Inter DTVM
+15/01/2026,Ações,BBAS3,Banco do Brasil S.A. ON,Compra,30,26.00,780.00,27.80,834.00,54.00,Inter DTVM
+15/01/2026,Ações,VALE3,Vale S.A. ON,Compra,12,60.00,720.00,63.50,762.00,42.00,Inter DTVM
+15/01/2026,Ações,TAEE4,Taesa PN,Compra,40,11.50,460.00,12.10,484.00,24.00,Inter DTVM
+15/01/2026,Ações,PETR4,Petrobras PN,Compra,25,35.00,875.00,38.40,960.00,85.00,Inter DTVM
+15/01/2026,Ações,CMIG3,Cemig ON,Compra,35,14.00,490.00,14.90,521.50,31.50,Inter DTVM
+15/01/2026,Ações,BBDC3,Banco Bradesco S.A. ON,Compra,40,13.50,540.00,12.80,512.00,-28.00,Inter DTVM
+15/01/2026,Ações,FIQE3,Unifique Telecomunicacoes ON,Compra,100,4.20,420.00,4.65,465.00,45.00,Inter DTVM
+15/01/2026,Ações,KLBN4,Klabin S.A. PN,Compra,90,4.10,369.00,4.30,387.00,18.00,Inter DTVM
+15/01/2026,Ações,BRBI11,BR Advisory Partners Unit,Compra,20,15.00,300.00,15.60,312.00,12.00,Inter DTVM
+15/01/2026,ETF,BOVA11,iShares Ibovespa ETF,Compra,8,125.00,1000.00,132.50,1060.00,60.00,Inter DTVM
+15/01/2026,ETF,SMAL11,iShares Small Cap ETF,Compra,6,100.00,600.00,96.00,576.00,-24.00,Inter DTVM
