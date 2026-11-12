@@ -37,7 +37,7 @@ public class PortfolioService {
         this.currencyService = currencyService;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public PortfolioSummaryDTO getPortfolioSummary(Long portfolioId) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new IllegalArgumentException("Portfolio não encontrado com id: " + portfolioId));

@@ -4,6 +4,8 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:invest_user}
     password: ${SPRING_DATASOURCE_PASSWORD:invest_secure_pwd}
     driver-class-name: org.postgresql.Driver
+  cache:
+    type: ${SPRING_CACHE_TYPE:simple}
   data:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}

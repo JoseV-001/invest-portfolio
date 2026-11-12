@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -26,6 +27,7 @@ public class CurrencyService {
         this.fxRepository = fxRepository;
     }
 
+    @Transactional
     @Cacheable(value = "currency_rates", key = "'USD_BRL'")
     public BigDecimal getUsdToBrlRate() {
         try {
