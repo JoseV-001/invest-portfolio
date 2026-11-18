@@ -14,4 +14,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("SELECT t FROM Transaction t JOIN FETCH t.asset WHERE t.portfolio.id = :portfolioId ORDER BY t.transactionDate ASC")
     List<Transaction> findByPortfolioIdWithAssetAsc(@Param("portfolioId") Long portfolioId);
+
+    List<Transaction> findByPortfolioIdAndAssetIdOrderByTransactionDateAsc(Long portfolioId, Long assetId);
+
+    void deleteByPortfolioIdAndAssetId(Long portfolioId, Long assetId);
 }

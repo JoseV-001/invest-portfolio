@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface QuoteHistoryRepository extends JpaRepository<QuoteHistory, Long> {
     Optional<QuoteHistory> findFirstByAssetIdOrderByTimestampDesc(Long assetId);
+
+    Optional<QuoteHistory> findFirstByOrderByTimestampDesc();
 }

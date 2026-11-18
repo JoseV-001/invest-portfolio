@@ -31,4 +31,10 @@ public class TransactionController {
     public ResponseEntity<List<TransactionResponseDTO>> listTransactions(@PathVariable Long portfolioId) {
         return ResponseEntity.ok(transactionService.listTransactionsByPortfolio(portfolioId));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long id) {
+        transactionService.deleteTransaction(id);
+        return ResponseEntity.noContent().build();
+    }
 }

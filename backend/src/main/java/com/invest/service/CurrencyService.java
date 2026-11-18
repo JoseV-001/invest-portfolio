@@ -6,11 +6,12 @@ import com.invest.provider.fx.AwesomeApiFxAdapter;
 import com.invest.repository.CurrencyExchangeRateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -27,14 +28,41 @@ public class CurrencyService {
         this.fxRepository = fxRepository;
     }
 
-    @Transactional
     @Cacheable(value = "currency_rates", key = "'USD_BRL'")
     public BigDecimal getUsdToBrlRate() {
+        return fetchAndPersistUsdToBrlRate();
+    }
+
+    @CachePut(value = "currency_rates", key = "'USD_BRL'")
+    public BigDecimal refreshUsdToBrlRate() {
+        return fetchAndPersistUsdToBrlRate();
+    }
+
+    private BigDecimal fetchAndPersistUsdToBrlRate() {
         try {
-            BigDecimal currentRate = fxAdapter.fetchUsdToBrlRate();
+            BigDecimal currentRate = fxAdapter.fetchUsdToBrlRate()
+                    .setScale(FinancialMathEngine.FX_SCALE, RoundingMode.HALF_UP);
             log.info("Câmbio USD/BRL atualizado via AwesomeAPI: {}", currentRate);
 
-            // Persistir histórico cambial
+            saveRateSafely(currentRate);
+            return currentRate;
+        } catch (Exception e) {
+            log.warn("Erro ao buscar câmbio ao vivo: {}. Buscando último registro em banco...", e.getMessage());
+            try {
+                Optional<CurrencyExchangeRate> lastRate = fxRepository
+                        .findFirstByFromCurrencyAndToCurrencyOrderByTimestampDesc(CurrencyType.USD, CurrencyType.BRL);
+                if (lastRate.isPresent()) {
+                    return lastRate.get().getRate();
+                }
+            } catch (Exception dbEx) {
+                log.error("Erro ao consultar câmbio em banco: {}", dbEx.getMessage());
+            }
+            return BigDecimal.valueOf(5.75).setScale(FinancialMathEngine.FX_SCALE, RoundingMode.HALF_UP);
+        }
+    }
+
+    private void saveRateSafely(BigDecimal currentRate) {
+        try {
             CurrencyExchangeRate fx = CurrencyExchangeRate.builder()
                     .fromCurrency(CurrencyType.USD)
                     .toCurrency(CurrencyType.BRL)
@@ -43,13 +71,8 @@ public class CurrencyService {
                     .timestamp(Instant.now())
                     .build();
             fxRepository.save(fx);
-
-            return currentRate;
-        } catch (Exception e) {
-            log.warn("Erro ao buscar câmbio ao vivo: {}. Buscando último registro em banco...", e.getMessage());
-            Optional<CurrencyExchangeRate> lastRate = fxRepository
-                    .findFirstByFromCurrencyAndToCurrencyOrderByTimestampDesc(CurrencyType.USD, CurrencyType.BRL);
-            return lastRate.map(CurrencyExchangeRate::getRate).orElse(BigDecimal.valueOf(5.750000));
+        } catch (Exception ex) {
+            log.warn("Não foi possível persistir histórico cambial: {}", ex.getMessage());
         }
     }
 }

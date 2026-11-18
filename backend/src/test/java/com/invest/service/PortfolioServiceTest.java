@@ -8,6 +8,8 @@ import com.invest.domain.model.Asset;
 import com.invest.domain.model.Portfolio;
 import com.invest.domain.model.Transaction;
 import com.invest.dto.PortfolioSummaryDTO;
+import com.invest.dto.PositionUpdateRequestDTO;
+import com.invest.repository.AssetRepository;
 import com.invest.repository.PortfolioRepository;
 import com.invest.repository.TransactionRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +27,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +38,9 @@ class PortfolioServiceTest {
 
     @Mock
     private TransactionRepository transactionRepository;
+
+    @Mock
+    private AssetRepository assetRepository;
 
     @Mock
     private QuoteService quoteService;
@@ -128,12 +134,105 @@ class PortfolioServiceTest {
         assertEquals(new BigDecimal("105.51"), summary.getTotalEquityNomadUsd());
         assertEquals(new BigDecimal("606.68"), summary.getTotalEquityNomadBrl());
 
-        // Total Equity BRL = 50.71 + 606.68 = 657.39 BRL
+        // Total Equity BRL = 50.71 + 606.6825 = 657.3925 -> 657.39 BRL
         assertEquals(new BigDecimal("657.39"), summary.getTotalGrossEquityBrl());
+        assertNotNull(summary.getTotalGrossEquityUsd());
+        assertNotNull(summary.getAllocationByClassBrl());
 
         // Posições
         assertEquals(2, summary.getPositions().size());
         assertTrue(summary.getAllocationByClassPercent().containsKey(AssetClass.STOCKS_BR));
         assertTrue(summary.getAllocationByClassPercent().containsKey(AssetClass.ETFS_US));
+    }
+
+    @Test
+    @DisplayName("Não deve quebrar consolidação quando refresh=true falha para um ativo específico")
+    void testResilientRefreshWhenSingleAssetFails() {
+        Portfolio portfolio = Portfolio.builder()
+                .id(1L)
+                .name("Carteira Resiliente")
+                .userId(UUID.randomUUID())
+                .baseCurrency(CurrencyType.BRL)
+                .build();
+
+        Asset itub4 = Asset.builder()
+                .id(11L)
+                .ticker("ITUB4")
+                .name("Itaú Unibanco PN")
+                .assetClass(AssetClass.STOCKS_BR)
+                .market(MarketType.B3)
+                .currency(CurrencyType.BRL)
+                .build();
+
+        Transaction tx = Transaction.builder()
+                .id(200L)
+                .portfolio(portfolio)
+                .asset(itub4)
+                .type(TransactionType.BUY)
+                .quantity(new BigDecimal("10.00000000"))
+                .unitPrice(new BigDecimal("30.0000"))
+                .totalAmount(new BigDecimal("300.0000"))
+                .currency(CurrencyType.BRL)
+                .exchangeRateOnDate(BigDecimal.ONE)
+                .transactionDate(Instant.now())
+                .broker("Banco Inter")
+                .build();
+
+        when(portfolioRepository.findById(1L)).thenReturn(Optional.of(portfolio));
+        when(transactionRepository.findByPortfolioIdWithAssetAsc(1L)).thenReturn(List.of(tx));
+        when(currencyService.refreshUsdToBrlRate()).thenReturn(new BigDecimal("5.800000"));
+        when(quoteService.refreshAndCachePrice(itub4)).thenThrow(new IllegalStateException("Brapi 429"));
+        when(quoteService.getLatestPrice(itub4)).thenReturn(new BigDecimal("33.0000"));
+
+        PortfolioSummaryDTO summary = assertDoesNotThrow(() -> portfolioService.getPortfolioSummary(1L, true));
+        assertEquals(new BigDecimal("330.00"), summary.getTotalGrossEquityBrl());
+    }
+
+    @Test
+    @DisplayName("Deve remover posição deletando todas as transações do ativo no portfolio")
+    void testRemovePosition() {
+        when(portfolioRepository.existsById(1L)).thenReturn(true);
+
+        portfolioService.removePosition(1L, 10L);
+
+        verify(transactionRepository).deleteByPortfolioIdAndAssetId(1L, 10L);
+    }
+
+    @Test
+    @DisplayName("Deve atualizar posição consolidando quantidade e preço médio")
+    void testUpdatePosition() {
+        Portfolio portfolio = Portfolio.builder()
+                .id(1L)
+                .name("Carteira Teste")
+                .userId(UUID.randomUUID())
+                .baseCurrency(CurrencyType.BRL)
+                .build();
+
+        Asset petr4 = Asset.builder()
+                .id(10L)
+                .ticker("PETR4")
+                .name("Petrobras PN")
+                .assetClass(AssetClass.STOCKS_BR)
+                .market(MarketType.B3)
+                .currency(CurrencyType.BRL)
+                .build();
+
+        PositionUpdateRequestDTO req = new PositionUpdateRequestDTO();
+        req.setQuantity(new BigDecimal("10"));
+        req.setAveragePrice(new BigDecimal("35.00"));
+        req.setBroker("Banco Inter");
+
+        when(portfolioRepository.findById(1L)).thenReturn(Optional.of(portfolio));
+        when(assetRepository.findById(10L)).thenReturn(Optional.of(petr4));
+        when(transactionRepository.findByPortfolioIdAndAssetIdOrderByTransactionDateAsc(1L, 10L))
+                .thenReturn(List.of());
+        when(transactionRepository.findByPortfolioIdWithAssetAsc(1L)).thenReturn(List.of());
+        when(currencyService.getUsdToBrlRate()).thenReturn(new BigDecimal("5.75"));
+
+        PortfolioSummaryDTO result = portfolioService.updatePosition(1L, 10L, req);
+
+        assertNotNull(result);
+        verify(transactionRepository).deleteByPortfolioIdAndAssetId(1L, 10L);
+        verify(transactionRepository).save(any(Transaction.class));
     }
 }

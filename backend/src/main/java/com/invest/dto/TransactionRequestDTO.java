@@ -1,6 +1,8 @@
 package com.invest.dto;
 
+import com.invest.domain.enums.AssetClass;
 import com.invest.domain.enums.CurrencyType;
+import com.invest.domain.enums.MarketType;
 import com.invest.domain.enums.TransactionType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +20,12 @@ public class TransactionRequestDTO {
     @NotBlank(message = "ticker é obrigatório")
     private String ticker;
 
+    private String assetName;
+
+    private AssetClass assetClass;
+
+    private MarketType market;
+
     @NotNull(message = "type é obrigatório")
     private TransactionType type;
 
@@ -25,7 +33,6 @@ public class TransactionRequestDTO {
     @DecimalMin(value = "0.00000001", message = "Quantidade mínima é 0.00000001")
     private BigDecimal quantity;
 
-    @NotNull(message = "unitPrice é obrigatório")
     @DecimalMin(value = "0.0001", message = "Preço unitário mínimo é 0.0001")
     private BigDecimal unitPrice;
 

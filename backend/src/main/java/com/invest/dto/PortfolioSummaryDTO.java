@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +15,12 @@ public class PortfolioSummaryDTO {
     private Long portfolioId;
     private String portfolioName;
     private BigDecimal currentUsdBrlRate;
-    
-    // Valores consolidados em Reais
+    private Instant lastUpdatedAt;
+
+    // Valores consolidados em Reais e equivalente em USD
     private BigDecimal totalInvestedBrl;
     private BigDecimal totalGrossEquityBrl;
+    private BigDecimal totalGrossEquityUsd;
     private BigDecimal totalProfitLossBrl;
     private BigDecimal totalReturnPercent;
 
@@ -29,6 +32,7 @@ public class PortfolioSummaryDTO {
     // Posições detalhadas
     private List<AssetPositionDTO> positions;
 
-    // Distribuição por classe de ativos (Asset Allocation)
+    // Distribuição por classe de ativos (Asset Allocation em % e em R$)
     private Map<AssetClass, BigDecimal> allocationByClassPercent;
+    private Map<AssetClass, BigDecimal> allocationByClassBrl;
 }
