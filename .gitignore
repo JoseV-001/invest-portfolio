@@ -21,6 +21,7 @@ backend/*.log
 frontend/node_modules/
 frontend/.next/
 frontend/out/
+frontend/*.tsbuildinfo
 frontend/.env.local
 frontend/.env.*.local
 frontend/npm-debug.log*
@@ -28,6 +29,8 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 
-# Docker
+# Environment & Docker
+.env
 *.env
+!.env.example
 docker/postgres/data/

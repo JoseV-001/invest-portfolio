@@ -4,16 +4,16 @@ services:
     container_name: invest-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: invest_db
-      POSTGRES_USER: invest_user
-      POSTGRES_PASSWORD: invest_secure_pwd
+      POSTGRES_DB: ${POSTGRES_DB:-invest_db}
+      POSTGRES_USER: ${POSTGRES_USER:-invest_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-invest_secure_pwd}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U invest_user -d invest_db"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-invest_user} -d $${POSTGRES_DB:-invest_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -25,7 +25,7 @@ services:
     container_name: invest-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redisdata:/data
     healthcheck:
@@ -48,16 +48,19 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/invest_db
-      SPRING_DATASOURCE_USERNAME: invest_user
-      SPRING_DATASOURCE_PASSWORD: invest_secure_pwd
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-invest_db}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-invest_user}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-invest_secure_pwd}
+      SPRING_CACHE_TYPE: ${SPRING_CACHE_TYPE:-redis}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-*}
+      BRAPI_TOKEN: ${BRAPI_TOKEN:-${BRAPI_API_TOKEN:-}}
+      BRAPI_MIN_INTERVAL_MS: ${BRAPI_MIN_INTERVAL_MS:-400}
       FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
-      BRAPI_API_TOKEN: ${BRAPI_API_TOKEN:-}
     networks:
       - invest-net
 
@@ -65,14 +68,18 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+        NEXT_PUBLIC_BACKEND_PORT: ${BACKEND_PORT:-8080}
     container_name: invest-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "3000:3000"
+      - "${FRONTEND_PORT:-3000}:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080/api/v1
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-}
+      NEXT_PUBLIC_BACKEND_PORT: ${BACKEND_PORT:-8080}
     networks:
       - invest-net
 

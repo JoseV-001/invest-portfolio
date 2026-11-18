@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/quotes")
-@CrossOrigin(origins = "*")
 public class QuoteController {
 
     private final QuoteService quoteService;
