@@ -35,8 +35,10 @@ export interface PortfolioSummary {
   portfolioId: number;
   portfolioName: string;
   currentUsdBrlRate: number;
+  lastUpdatedAt?: string;
   totalInvestedBrl: number;
   totalGrossEquityBrl: number;
+  totalGrossEquityUsd?: number;
   totalProfitLossBrl: number;
   totalReturnPercent: number;
   totalEquityB3Brl: number;
@@ -44,20 +46,44 @@ export interface PortfolioSummary {
   totalEquityNomadBrl: number;
   positions: AssetPosition[];
   allocationByClassPercent: Record<AssetClass, number>;
+  allocationByClassBrl?: Partial<Record<AssetClass, number>>;
 }
 
 export interface TransactionRequest {
   portfolioId: number;
   ticker: string;
+  assetName?: string;
+  assetClass?: AssetClass;
+  market?: MarketType;
   type: TransactionType;
   quantity: number;
-  unitPrice: number;
+  unitPrice?: number;
   fees?: number;
   currency: CurrencyType;
   exchangeRate?: number;
   transactionDate: string;
   broker: string;
   notes?: string;
+}
+
+export interface PositionUpdateRequest {
+  quantity: number;
+  averagePrice: number;
+  assetName?: string;
+  assetClass?: AssetClass;
+  market?: MarketType;
+  broker?: string;
+  notes?: string;
+}
+
+export interface QuoteLookupResponse {
+  ticker: string;
+  name: string;
+  price: number;
+  currency: CurrencyType;
+  market: MarketType;
+  assetClass: AssetClass;
+  timestamp?: string;
 }
 
 export interface TransactionResponse {
