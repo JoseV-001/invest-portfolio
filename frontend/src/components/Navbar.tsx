@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Clock, DollarSign, PieChart, Plus, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { Clock, DollarSign, Eye, EyeOff, PieChart, Plus, RefreshCw, WifiOff } from 'lucide-react';
 import { formatTimestampPtBr } from '../utils/formatters';
 
 interface NavbarProps {
   usdRate?: number;
   lastUpdatedAt?: string;
   isOfflineDemo?: boolean;
+  hideValues?: boolean;
+  onToggleHideValues: () => void;
   onNewTransaction: () => void;
   onRefresh: () => void;
   isLoading?: boolean;
@@ -17,6 +19,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   usdRate,
   lastUpdatedAt,
   isOfflineDemo = false,
+  hideValues = false,
+  onToggleHideValues,
   onNewTransaction,
   onRefresh,
   isLoading = false
@@ -81,6 +85,28 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
           )}
+
+          {/* Botão Ocultar/Mostrar Valores */}
+          <button
+            type="button"
+            onClick={onToggleHideValues}
+            aria-pressed={hideValues}
+            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-medium transition-all ${
+              hideValues
+                ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/35 text-amber-200'
+                : 'bg-slate-900 hover:bg-slate-800 border-slate-700/80 hover:border-slate-600 text-slate-200'
+            }`}
+            title={hideValues ? 'Mostrar valores e investimentos' : 'Ocultar valores e investimentos'}
+          >
+            {hideValues ? (
+              <Eye className="w-3.5 h-3.5 text-amber-300" />
+            ) : (
+              <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+            )}
+            <span className="hidden sm:inline">
+              {hideValues ? 'Mostrar' : 'Ocultar'}
+            </span>
+          </button>
 
           {/* Botão Atualizar Cotações com Spinner */}
           <button

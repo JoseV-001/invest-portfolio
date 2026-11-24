@@ -15,9 +15,13 @@ import { formatBrl, formatUsd } from '../utils/formatters';
 
 interface SummaryCardsProps {
   summary: PortfolioSummary;
+  hideValues?: boolean;
 }
 
-export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
+const MASKED_BRL = 'R$ ••••••';
+const MASKED_USD = 'US$ ••••••';
+
+export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, hideValues = false }) => {
   const isPositive = summary.totalProfitLossBrl >= 0;
   const usdRate = summary.currentUsdBrlRate > 0 ? summary.currentUsdBrlRate : 5.75;
 
@@ -53,13 +57,13 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
           </div>
 
           <div className="text-3xl sm:text-[32px] font-extrabold tracking-tight text-white tabular-nums">
-            {formatBrl(summary.totalGrossEquityBrl)}
+            {hideValues ? MASKED_BRL : formatBrl(summary.totalGrossEquityBrl)}
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-950/90 border border-slate-800 text-xs font-semibold text-slate-200 tabular-nums">
               <span className="text-slate-400 font-normal">Equivalente:</span>
-              {formatUsd(grossEquityUsd)}
+              {hideValues ? MASKED_USD : formatUsd(grossEquityUsd)}
             </span>
           </div>
         </div>
@@ -105,8 +109,14 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
                 isPositive ? 'text-emerald-400' : 'text-rose-400'
               }`}
             >
-              {isPositive ? '+' : '-'}
-              {formatBrl(Math.abs(summary.totalProfitLossBrl))}
+              {hideValues ? (
+                MASKED_BRL
+              ) : (
+                <>
+                  {isPositive ? '+' : '-'}
+                  {formatBrl(Math.abs(summary.totalProfitLossBrl))}
+                </>
+              )}
             </span>
 
             <span
@@ -135,7 +145,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
         <div className="mt-5 pt-3.5 border-t border-slate-800/70 flex items-center justify-between text-xs">
           <span className="text-slate-400">Custo Total Investido</span>
           <span className="font-bold text-slate-100 tabular-nums">
-            {formatBrl(summary.totalInvestedBrl)}
+            {hideValues ? MASKED_BRL : formatBrl(summary.totalInvestedBrl)}
           </span>
         </div>
       </div>
@@ -163,7 +173,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
                 <span>Brasil (B3)</span>
               </div>
               <div className="text-sm sm:text-base font-bold text-white tabular-nums">
-                {formatBrl(summary.totalEquityB3Brl)}
+                {hideValues ? MASKED_BRL : formatBrl(summary.totalEquityB3Brl)}
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5 tabular-nums">
                 {b3SharePct.toFixed(1)}% • BRL
@@ -177,10 +187,10 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
                 <span>Exterior (Nomad)</span>
               </div>
               <div className="text-sm sm:text-base font-bold text-white tabular-nums">
-                {formatBrl(summary.totalEquityNomadBrl)}
+                {hideValues ? MASKED_BRL : formatBrl(summary.totalEquityNomadBrl)}
               </div>
               <div className="text-[11px] text-amber-300/90 font-medium mt-0.5 tabular-nums">
-                {formatUsd(summary.totalEquityNomadUsd)} ({nomadSharePct.toFixed(1)}%)
+                {hideValues ? MASKED_USD : formatUsd(summary.totalEquityNomadUsd)} ({nomadSharePct.toFixed(1)}%)
               </div>
             </div>
           </div>

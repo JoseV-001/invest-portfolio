@@ -10,7 +10,10 @@ interface AssetAllocationChartProps {
   allocationBrl?: Partial<Record<AssetClass, number>>;
   positions?: AssetPosition[];
   totalGrossEquityBrl?: number;
+  hideValues?: boolean;
 }
+
+const MASKED_BRL = 'R$ ••••••';
 
 interface AllocationSlice {
   assetClass: AssetClass;
@@ -26,7 +29,8 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
   allocation,
   allocationBrl,
   positions = [],
-  totalGrossEquityBrl = 0
+  totalGrossEquityBrl = 0,
+  hideValues = false
 }) => {
   const [hoveredClass, setHoveredClass] = useState<AssetClass | null>(null);
 
@@ -102,7 +106,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
             />
             <span className="text-slate-300 font-medium">{activeSlice.label}:</span>
             <span className="font-bold text-white tabular-nums">
-              {formatBrl(activeSlice.valueBrl)}
+              {hideValues ? MASKED_BRL : formatBrl(activeSlice.valueBrl)}
             </span>
             <span className="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300 font-bold tabular-nums">
               {activeSlice.percent.toFixed(2)}%
@@ -160,7 +164,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
                       onMouseLeave={() => setHoveredClass(null)}
                     >
                       <title>
-                        {`${slice.label}: ${formatBrl(slice.valueBrl)} (${slice.percent.toFixed(2)}%)`}
+                        {`${slice.label}: ${hideValues ? MASKED_BRL : formatBrl(slice.valueBrl)} (${slice.percent.toFixed(2)}%)`}
                       </title>
                     </circle>
                   );
@@ -178,7 +182,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
                       {activeSlice.percent.toFixed(2)}%
                     </span>
                     <span className="text-[11px] font-semibold text-emerald-400 tabular-nums mt-0.5">
-                      {formatBrl(activeSlice.valueBrl)}
+                      {hideValues ? MASKED_BRL : formatBrl(activeSlice.valueBrl)}
                     </span>
                   </>
                 ) : (
@@ -187,7 +191,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
                       Total Alocado
                     </span>
                     <span className="text-sm font-bold text-white tabular-nums mt-1">
-                      {formatBrl(totalGrossEquityBrl)}
+                      {hideValues ? MASKED_BRL : formatBrl(totalGrossEquityBrl)}
                     </span>
                     <span className="text-[11px] text-slate-500 mt-0.5">
                       {slices.length} classes
@@ -216,7 +220,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
                       backgroundColor: slice.hex,
                       opacity: isDimmed ? 0.35 : 1
                     }}
-                    title={`${slice.label} • ${formatBrl(slice.valueBrl)} (${slice.percent.toFixed(2)}%)`}
+                    title={`${slice.label} • ${hideValues ? MASKED_BRL : formatBrl(slice.valueBrl)} (${slice.percent.toFixed(2)}%)`}
                   />
                 );
               })}
@@ -247,7 +251,7 @@ export const AssetAllocationChart: React.FC<AssetAllocationChartProps> = ({
                           {slice.label}
                         </div>
                         <div className="text-[11px] text-slate-400 tabular-nums">
-                          {formatBrl(slice.valueBrl)}
+                          {hideValues ? MASKED_BRL : formatBrl(slice.valueBrl)}
                         </div>
                       </div>
                     </div>

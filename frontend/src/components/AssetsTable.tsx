@@ -25,9 +25,14 @@ import {
 interface AssetsTableProps {
   positions: AssetPosition[];
   usdRate?: number;
+  hideValues?: boolean;
   onEditPosition: (position: AssetPosition) => void;
   onRemovePosition: (position: AssetPosition) => Promise<void>;
 }
+
+const MASKED_VALUE = '••••••';
+const MASKED_BRL = 'R$ ••••••';
+const MASKED_USD = 'US$ ••••••';
 
 type FilterTab = 'ALL' | 'B3' | 'US' | 'STOCKS' | 'FIIS' | 'REITS' | 'ETFS';
 type SortField = 'portfolioSharePercent' | 'returnRatePercent' | 'currentGrossValueBrl' | 'ticker';
@@ -36,6 +41,7 @@ type SortDirection = 'asc' | 'desc';
 export const AssetsTable: React.FC<AssetsTableProps> = ({
   positions,
   usdRate = 5.75,
+  hideValues = false,
   onEditPosition,
   onRemovePosition
 }) => {
@@ -159,7 +165,7 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5 tabular-nums">
-              Subtotal exibido: <span className="text-slate-200 font-semibold">{formatBrl(filteredTotalBrl)}</span>
+              Subtotal exibido: <span className="text-slate-200 font-semibold">{hideValues ? MASKED_BRL : formatBrl(filteredTotalBrl)}</span>
             </p>
           </div>
 
@@ -327,17 +333,17 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
 
                     {/* Quantidade (até 8 casas para Nomad) */}
                     <td className="py-3.5 px-3 text-right font-semibold text-slate-200 tabular-nums">
-                      {formatQuantity(pos.quantity, pos.currency)}
+                      {hideValues ? MASKED_VALUE : formatQuantity(pos.quantity, pos.currency)}
                     </td>
 
                     {/* Preço Médio (Exibição dupla para USD) */}
                     <td className="py-3.5 px-3 text-right tabular-nums">
                       <div className="font-medium text-slate-200">
-                        {formatNativeCurrency(pos.averagePrice, pos.currency, 2)}
+                        {hideValues ? (isUsd ? MASKED_USD : MASKED_BRL) : formatNativeCurrency(pos.averagePrice, pos.currency, 2)}
                       </div>
                       {isUsd && (
                         <div className="text-[10px] text-slate-500 mt-0.5">
-                          ≈ {formatBrl(pos.averagePrice * effectiveRate)}
+                          ≈ {hideValues ? MASKED_BRL : formatBrl(pos.averagePrice * effectiveRate)}
                         </div>
                       )}
                     </td>
@@ -357,15 +363,15 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
                     {/* Saldo Consolidado em R$ + Saldo em US$ quando aplicável */}
                     <td className="py-3.5 px-3 text-right tabular-nums">
                       <div className="font-bold text-white text-sm">
-                        {formatBrl(pos.currentGrossValueBrl)}
+                        {hideValues ? MASKED_BRL : formatBrl(pos.currentGrossValueBrl)}
                       </div>
                       {isUsd ? (
                         <div className="text-[11px] font-medium text-amber-300/90 mt-0.5">
-                          {formatUsd(pos.currentGrossValue)}
+                          {hideValues ? MASKED_USD : formatUsd(pos.currentGrossValue)}
                         </div>
                       ) : (
                         <div className="text-[10px] text-slate-500 mt-0.5">
-                          Custo {formatBrl(pos.totalInvestedBrl)}
+                          Custo {hideValues ? MASKED_BRL : formatBrl(pos.totalInvestedBrl)}
                         </div>
                       )}
                     </td>
@@ -394,8 +400,14 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
                             pos.profitLossBrl >= 0 ? 'text-emerald-400/80' : 'text-rose-400/80'
                           }`}
                         >
-                          {pos.profitLossBrl >= 0 ? '+' : '-'}
-                          {formatBrl(Math.abs(pos.profitLossBrl))}
+                          {hideValues ? (
+                            MASKED_BRL
+                          ) : (
+                            <>
+                              {pos.profitLossBrl >= 0 ? '+' : '-'}
+                              {formatBrl(Math.abs(pos.profitLossBrl))}
+                            </>
+                          )}
                         </span>
                       </div>
                     </td>
