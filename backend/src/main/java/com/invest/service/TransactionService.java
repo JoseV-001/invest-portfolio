@@ -28,10 +28,10 @@ public class TransactionService {
     private final QuoteService quoteService;
 
     public TransactionService(TransactionRepository transactionRepository,
-                              PortfolioRepository portfolioRepository,
-                              AssetRepository assetRepository,
-                              CurrencyService currencyService,
-                              QuoteService quoteService) {
+            PortfolioRepository portfolioRepository,
+            AssetRepository assetRepository,
+            CurrencyService currencyService,
+            QuoteService quoteService) {
         this.transactionRepository = transactionRepository;
         this.portfolioRepository = portfolioRepository;
         this.assetRepository = assetRepository;
@@ -42,7 +42,8 @@ public class TransactionService {
     @Transactional
     public TransactionResponseDTO createTransaction(TransactionRequestDTO request) {
         Portfolio portfolio = portfolioRepository.findById(request.getPortfolioId())
-                .orElseThrow(() -> new IllegalArgumentException("Portfolio não encontrado: " + request.getPortfolioId()));
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Portfolio não encontrado: " + request.getPortfolioId()));
 
         String normalizedTicker = request.getTicker().trim().toUpperCase();
         Asset asset = assetRepository.findByTicker(normalizedTicker)
@@ -50,10 +51,14 @@ public class TransactionService {
                 .orElseGet(() -> createAssetFromRequest(normalizedTicker, request));
 
         BigDecimal unitPrice = request.getUnitPrice();
-        if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
+        if (request.getType() == com.invest.domain.enums.TransactionType.SPLIT
+                || request.getType() == com.invest.domain.enums.TransactionType.REVERSE_SPLIT) {
+            unitPrice = unitPrice != null ? unitPrice : BigDecimal.ZERO;
+        } else if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
             unitPrice = quoteService.getLatestPrice(asset);
             if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException("Não foi possível obter a cotação atual para " + normalizedTicker + ". Informe o preço unitário manualmente.");
+                throw new IllegalArgumentException("Não foi possível obter a cotação atual para " + normalizedTicker
+                        + ". Informe o preço unitário manualmente.");
             }
         }
         unitPrice = unitPrice.setScale(FinancialMathEngine.MONEY_SCALE, RoundingMode.HALF_UP);
@@ -93,6 +98,16 @@ public class TransactionService {
 
         Transaction saved = transactionRepository.save(transaction);
         return mapToDTO(saved);
+    }
+
+    @Transactional
+    public List<TransactionResponseDTO> createTransactionsBatch(List<TransactionRequestDTO> requests) {
+        if (requests == null || requests.isEmpty()) {
+            throw new IllegalArgumentException("Lista de transações vazia para importação.");
+        }
+        return requests.stream()
+                .map(this::createTransaction)
+                .toList();
     }
 
     private Asset syncAssetMetadataIfRequested(Asset existing, TransactionRequestDTO request) {

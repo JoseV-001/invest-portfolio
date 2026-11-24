@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,6 +37,11 @@ public class CurrencyService {
     @CachePut(value = "currency_rates", key = "'USD_BRL'")
     public BigDecimal refreshUsdToBrlRate() {
         return fetchAndPersistUsdToBrlRate();
+    }
+
+    @Scheduled(cron = "0 0/15 10-18 * * MON-FRI", zone = "America/Sao_Paulo")
+    public void scheduledUsdRateUpdate() {
+        refreshUsdToBrlRate();
     }
 
     private BigDecimal fetchAndPersistUsdToBrlRate() {

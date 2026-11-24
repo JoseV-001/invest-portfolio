@@ -10,7 +10,8 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    List<Transaction> findByPortfolioIdOrderByTransactionDateDesc(Long portfolioId);
+    @Query("SELECT t FROM Transaction t JOIN FETCH t.asset JOIN FETCH t.portfolio WHERE t.portfolio.id = :portfolioId ORDER BY t.transactionDate DESC")
+    List<Transaction> findByPortfolioIdOrderByTransactionDateDesc(@Param("portfolioId") Long portfolioId);
 
     @Query("SELECT t FROM Transaction t JOIN FETCH t.asset WHERE t.portfolio.id = :portfolioId ORDER BY t.transactionDate ASC")
     List<Transaction> findByPortfolioIdWithAssetAsc(@Param("portfolioId") Long portfolioId);

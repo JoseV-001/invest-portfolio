@@ -26,6 +26,13 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/batch")
+    public ResponseEntity<List<TransactionResponseDTO>> createTransactionsBatch(
+            @Valid @RequestBody List<@Valid TransactionRequestDTO> requests) {
+        List<TransactionResponseDTO> responses = transactionService.createTransactionsBatch(requests);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+    }
+
     @GetMapping("/portfolio/{portfolioId}")
     public ResponseEntity<List<TransactionResponseDTO>> listTransactions(@PathVariable Long portfolioId) {
         return ResponseEntity.ok(transactionService.listTransactionsByPortfolio(portfolioId));

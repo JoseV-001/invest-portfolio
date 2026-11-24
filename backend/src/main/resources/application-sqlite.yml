@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:sqlite:${SQLITE_DB_PATH:./data/invest_portfolio.db}?journal_mode=WAL&busy_timeout=5000&foreign_keys=on&date_string_format=yyyy-MM-dd HH:mm:ss}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      maximum-pool-size: 1
+      connection-timeout: 10000
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        type:
+          preferred_uuid_jdbc_type: VARCHAR
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration-sqlite
+  cache:
+    type: ${SPRING_CACHE_TYPE:simple}
+
+logging:
+  level:
+    com.invest: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN

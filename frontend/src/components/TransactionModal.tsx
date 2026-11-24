@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Check, Search, RefreshCw, Sparkles, AlertCircle } from 'lucide-react';
 import {
   AssetClass,
@@ -22,6 +22,7 @@ interface TransactionModalProps {
   onClose: () => void;
   onSubmit: (data: TransactionRequest) => Promise<void>;
   usdRate?: number;
+  defaultType?: TransactionType;
 }
 
 function parseDecimalInput(raw: string): number {
@@ -33,7 +34,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  usdRate = 5.75
+  usdRate = 5.75,
+  defaultType = 'BUY'
 }) => {
   const [ticker, setTicker] = useState('');
   const [assetName, setAssetName] = useState('');
@@ -55,7 +57,20 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (isOpen) {
+      setType(defaultType);
+      if (defaultType === 'DIVIDEND' || defaultType === 'JCP' || defaultType === 'AMORTIZATION') {
+        setInputMode('QTY');
+        setQuantity('1');
+      }
+    }
+  }, [isOpen, defaultType]);
+
   if (!isOpen) return null;
+
+  const isIncomeType = type === 'DIVIDEND' || type === 'JCP' || type === 'AMORTIZATION';
+  const isSplitType = type === 'SPLIT' || type === 'REVERSE_SPLIT';
 
   const handleTickerChange = (raw: string) => {
     const clean = raw.toUpperCase();
@@ -302,11 +317,23 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               </label>
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value as TransactionType)}
+                onChange={(e) => {
+                  const nextType = e.target.value as TransactionType;
+                  setType(nextType);
+                  if (nextType === 'DIVIDEND' || nextType === 'JCP' || nextType === 'AMORTIZATION') {
+                    setInputMode('QTY');
+                    if (!quantity) setQuantity('1');
+                  }
+                }}
                 className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500"
               >
                 <option value="BUY">Compra (Aporte)</option>
                 <option value="SELL">Venda</option>
+                <option value="DIVIDEND">Dividendo / Rendimento</option>
+                <option value="JCP">JCP (Juros sobre Capital)</option>
+                <option value="AMORTIZATION">Amortização</option>
+                <option value="SPLIT">Desdobramento (Split)</option>
+                <option value="REVERSE_SPLIT">Grupamento (Inplit)</option>
               </select>
             </div>
           </div>
@@ -404,7 +431,12 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               {inputMode === 'QTY' ? (
                 <div>
                   <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                    Quantidade <span className="text-slate-500">(até 8 decimais)</span>
+                    {isIncomeType
+                      ? 'Cotas (ou 1 p/ valor total)'
+                      : isSplitType
+                      ? 'Fator (ex: 2 p/ 1:2)'
+                      : 'Quantidade'}{' '}
+                    <span className="text-slate-500">(até 8 decimais)</span>
                   </label>
                   <input
                     type="text"
@@ -445,8 +477,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
               <div>
                 <label className="block text-[11px] font-medium text-slate-400 mb-1">
-                  Preço Unitário ({currency}){' '}
-                  <span className="text-slate-500">{inputMode === 'QTY' ? '(vazio = mercado)' : ''}</span>
+                  {isIncomeType ? `Valor por Cota / Recebido (${currency})` : `Preço Unitário (${currency})`}{' '}
+                  <span className="text-slate-500">{inputMode === 'QTY' && !isIncomeType && !isSplitType ? '(vazio = mercado)' : ''}</span>
                 </label>
                 <input
                   type="text"

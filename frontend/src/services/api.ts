@@ -1,10 +1,15 @@
 import {
+  AllocationTarget,
+  AllocationTargetInput,
   AssetClass,
   CurrencyType,
+  DividendSummary,
   MarketType,
+  PortfolioEvolutionPoint,
   PortfolioSummary,
   PositionUpdateRequest,
   QuoteLookupResponse,
+  RebalanceSuggestion,
   TransactionRequest,
   TransactionResponse
 } from '../types';
@@ -149,4 +154,108 @@ export async function fetchUsdRate(): Promise<{ pair: string; rate: number; time
     throw new Error('Erro ao buscar cotação de câmbio');
   }
   return res.json();
+}
+
+export async function fetchAllocations(portfolioId: number = 1): Promise<AllocationTarget[]> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/portfolios/${portfolioId}/allocations`, {
+    cache: 'no-store'
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao buscar metas de alocação'));
+  }
+  return res.json();
+}
+
+export async function updateAllocations(
+  portfolioId: number,
+  targets: AllocationTargetInput[]
+): Promise<AllocationTarget[]> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/portfolios/${portfolioId}/allocations`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ targets })
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao salvar metas de alocação'));
+  }
+  return res.json();
+}
+
+export async function fetchRebalanceSuggestion(
+  portfolioId: number,
+  amountBrl: number
+): Promise<RebalanceSuggestion> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(
+    `${baseUrl}/portfolios/${portfolioId}/rebalance?amountBrl=${encodeURIComponent(amountBrl)}`,
+    { cache: 'no-store' }
+  );
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao calcular sugestão de aporte'));
+  }
+  return res.json();
+}
+
+export async function fetchDividendsSummary(portfolioId: number = 1): Promise<DividendSummary> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/portfolios/${portfolioId}/dividends`, {
+    cache: 'no-store'
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao buscar proventos'));
+  }
+  return res.json();
+}
+
+export async function fetchPortfolioEvolution(portfolioId: number = 1): Promise<PortfolioEvolutionPoint[]> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/portfolios/${portfolioId}/evolution`, {
+    cache: 'no-store'
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao buscar evolução patrimonial'));
+  }
+  return res.json();
+}
+
+export async function fetchTransactions(portfolioId: number = 1): Promise<TransactionResponse[]> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/transactions/portfolio/${portfolioId}`, {
+    cache: 'no-store'
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao buscar histórico de transações'));
+  }
+  return res.json();
+}
+
+export async function deleteTransaction(transactionId: number): Promise<void> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/transactions/${transactionId}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao excluir transação'));
+  }
+}
+
+export async function createTransactionsBatch(
+  requests: TransactionRequest[]
+): Promise<TransactionResponse[]> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/transactions/batch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requests)
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao importar lote de transações'));
+  }
+  return res.json();
+}
+
+export function getExportPortfolioCsvUrl(portfolioId: number = 1): string {
+  return `${resolveApiBaseUrl()}/portfolios/${portfolioId}/export/csv`;
 }

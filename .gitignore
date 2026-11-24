@@ -34,3 +34,12 @@ frontend/pnpm-debug.log*
 *.env
 !.env.example
 docker/postgres/data/
+
+# Local SQLite database files
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/
+backend/data/

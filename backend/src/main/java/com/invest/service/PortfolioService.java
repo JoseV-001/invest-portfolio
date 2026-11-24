@@ -103,6 +103,17 @@ public class PortfolioService {
                         totalCostLocal = currentQty.multiply(avgPrice)
                                 .setScale(FinancialMathEngine.MONEY_SCALE, RoundingMode.HALF_UP);
                     }
+                } else if (tx.getType() == TransactionType.SPLIT && tx.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+                    currentQty = currentQty.multiply(tx.getQuantity())
+                            .setScale(FinancialMathEngine.QUANTITY_SCALE, RoundingMode.HALF_UP);
+                    if (currentQty.compareTo(BigDecimal.ZERO) > 0) {
+                        avgPrice = totalCostLocal.divide(currentQty, FinancialMathEngine.MONEY_SCALE, RoundingMode.HALF_UP);
+                    }
+                } else if (tx.getType() == TransactionType.REVERSE_SPLIT && tx.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+                    currentQty = currentQty.divide(tx.getQuantity(), FinancialMathEngine.QUANTITY_SCALE, RoundingMode.HALF_UP);
+                    if (currentQty.compareTo(BigDecimal.ZERO) > 0) {
+                        avgPrice = totalCostLocal.divide(currentQty, FinancialMathEngine.MONEY_SCALE, RoundingMode.HALF_UP);
+                    }
                 }
             }
 

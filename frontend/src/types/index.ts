@@ -102,3 +102,76 @@ export interface TransactionResponse {
   broker: string;
   notes?: string;
 }
+
+export interface AllocationTarget {
+  assetClass: AssetClass;
+  targetPercentage: number;
+  currentPercentage: number;
+  currentValueBrl: number;
+  deviationPercent: number;
+}
+
+export interface AllocationTargetInput {
+  assetClass: AssetClass;
+  targetPercentage: number;
+}
+
+export interface RebalanceItem {
+  assetClass: AssetClass;
+  currentPercentage: number;
+  targetPercentage: number;
+  currentValueBrl: number;
+  projectedValueBrl: number;
+  projectedPercentage: number;
+  suggestedAmountBrl: number;
+  suggestedAmountUsd: number;
+  suggestedTickers: string[];
+}
+
+export interface RebalanceSuggestion {
+  contributionBrl: number;
+  usdBrlRate: number;
+  totalCurrentEquityBrl: number;
+  projectedTotalEquityBrl: number;
+  items: RebalanceItem[];
+}
+
+export interface MonthlyDividend {
+  month: string;
+  label: string;
+  totalBrl: number;
+  fromBrl: number;
+  fromUsdInBrl: number;
+  paymentsCount: number;
+}
+
+export interface AssetDividend {
+  ticker: string;
+  assetName: string;
+  assetClass: AssetClass;
+  currency: CurrencyType;
+  totalReceivedNative: number;
+  totalReceivedBrl: number;
+  paymentsCount: number;
+  yieldOnCostPercent: number;
+  lastPaymentDate?: string;
+}
+
+export interface DividendSummary {
+  totalReceivedBrl: number;
+  currentMonthBrl: number;
+  last12MonthsBrl: number;
+  monthlyAverageBrl: number;
+  portfolioYieldOnCostPercent: number;
+  monthlyHistory: MonthlyDividend[];
+  byAsset: AssetDividend[];
+}
+
+export interface PortfolioEvolutionPoint {
+  date: string;
+  label: string;
+  investedBrl: number;
+  grossEquityBrl: number;
+  profitLossBrl: number;
+  returnPercent: number;
+}
