@@ -26,32 +26,22 @@ export function resolveApiBaseUrl(): string {
   const configuredBackendPort = process.env.NEXT_PUBLIC_BACKEND_PORT?.trim() || '8080';
 
   if (typeof window !== 'undefined') {
-    const browserHost = window.location.hostname;
-    const browserProtocol = window.location.protocol;
-    const isBrowserLocalhost = browserHost === 'localhost' || browserHost === '127.0.0.1';
+    const browserHost = window.location.hostname || 'localhost';
+    const browserProtocol = window.location.protocol || 'http:';
+
+    if (configuredUrl && configuredUrl.startsWith('/')) {
+      return configuredUrl.replace(/\/+$/, '');
+    }
 
     if (configuredUrl) {
-      // Caminho relativo (ex: /api/v1 atrás de reverse proxy Nginx/Traefik)
-      if (configuredUrl.startsWith('/')) {
-        return configuredUrl.replace(/\/+$/, '');
+      try {
+        const parsed = new URL(configuredUrl);
+        const port = parsed.port || configuredBackendPort;
+        const pathname = parsed.pathname && parsed.pathname !== '/' ? parsed.pathname : '/api/v1';
+        return `${browserProtocol}//${browserHost}:${port}${pathname}`.replace(/\/+$/, '');
+      } catch {
+        return `${browserProtocol}//${browserHost}:${configuredBackendPort}/api/v1`;
       }
-
-      // Se o navegador está acessando via IP da rede/domínio, mas NEXT_PUBLIC_API_URL aponta para localhost,
-      // substitui automaticamente pelo hostname atual da janela mantendo a porta configurada.
-      const pointsToLocalhost =
-        configuredUrl.includes('://localhost') || configuredUrl.includes('://127.0.0.1');
-
-      if (!isBrowserLocalhost && pointsToLocalhost) {
-        try {
-          const parsed = new URL(configuredUrl);
-          const portSegment = parsed.port ? `:${parsed.port}` : `:${configuredBackendPort}`;
-          return `${browserProtocol}//${browserHost}${portSegment}${parsed.pathname}`.replace(/\/+$/, '');
-        } catch {
-          return `${browserProtocol}//${browserHost}:${configuredBackendPort}/api/v1`;
-        }
-      }
-
-      return configuredUrl.replace(/\/+$/, '');
     }
 
     return `${browserProtocol}//${browserHost}:${configuredBackendPort}/api/v1`;
