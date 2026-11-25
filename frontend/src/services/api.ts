@@ -1,4 +1,7 @@
 import {
+  AiAnalysisResponse,
+  AiChatResponse,
+  AiChatTurn,
   AllocationTarget,
   AllocationTargetInput,
   AssetClass,
@@ -258,4 +261,37 @@ export async function createTransactionsBatch(
 
 export function getExportPortfolioCsvUrl(portfolioId: number = 1): string {
   return `${resolveApiBaseUrl()}/portfolios/${portfolioId}/export/csv`;
+}
+
+export async function sendAiChat(
+  portfolioId: number,
+  message: string,
+  history: AiChatTurn[]
+): Promise<AiChatResponse> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/ai/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ portfolioId, message, history })
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, 'Erro ao consultar Copiloto IA'));
+  }
+  return res.json();
+}
+
+export async function analyzeTickerWithAi(
+  ticker: string,
+  options?: { date?: string; analysts?: string[]; fast?: boolean }
+): Promise<AiAnalysisResponse> {
+  const baseUrl = resolveApiBaseUrl();
+  const res = await fetch(`${baseUrl}/ai/analyze/${encodeURIComponent(ticker.trim())}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(options || {})
+  });
+  if (!res.ok) {
+    throw new Error(await extractErrorMessage(res, `Erro ao analisar ${ticker} com TradingAgents`));
+  }
+  return res.json();
 }

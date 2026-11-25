@@ -175,3 +175,35 @@ export interface PortfolioEvolutionPoint {
   profitLossBrl: number;
   returnPercent: number;
 }
+
+export interface AiChatTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface AiChatResponse {
+  reply: string;
+  model: string;
+}
+
+export interface AiAnalysisSummary {
+  marketReport?: string;
+  sentimentReport?: string;
+  newsReport?: string;
+  fundamentalsReport?: string;
+  investmentPlan?: string;
+  traderInvestmentPlan?: string;
+  bullHistory?: string;
+  bearHistory?: string;
+  riskHistory?: string;
+}
+
+export interface AiAnalysisResponse {
+  ticker: string;
+  date: string;
+  analysts: string[];
+  model?: string;
+  finalRating: string;
+  finalTradeDecision: string;
+  summary?: AiAnalysisSummary;
+}

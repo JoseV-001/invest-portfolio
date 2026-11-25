@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Clock, DollarSign, Eye, EyeOff, PieChart, Plus, RefreshCw, WifiOff } from 'lucide-react';
+import { Clock, DollarSign, Eye, EyeOff, PieChart, Plus, RefreshCw, Sparkles, WifiOff } from 'lucide-react';
 import { formatTimestampPtBr } from '../utils/formatters';
 
 interface NavbarProps {
@@ -10,6 +10,7 @@ interface NavbarProps {
   isOfflineDemo?: boolean;
   hideValues?: boolean;
   onToggleHideValues: () => void;
+  onOpenAiCopilot: () => void;
   onNewTransaction: () => void;
   onRefresh: () => void;
   isLoading?: boolean;
@@ -21,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   isOfflineDemo = false,
   hideValues = false,
   onToggleHideValues,
+  onOpenAiCopilot,
   onNewTransaction,
   onRefresh,
   isLoading = false
@@ -120,6 +122,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="hidden sm:inline">
               {isLoading ? 'Atualizando...' : 'Atualizar'}
             </span>
+          </button>
+
+          {/* CTA Copiloto IA */}
+          <button
+            type="button"
+            onClick={onOpenAiCopilot}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-indigo-500/20 via-slate-900 to-emerald-500/20 hover:from-indigo-500/30 hover:to-emerald-500/30 border border-emerald-500/35 hover:border-emerald-400/60 text-xs font-semibold text-emerald-200 transition-all shadow-sm"
+            title="Abrir Copiloto Financeiro IA (Chat & TradingAgents)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Copiloto IA</span>
           </button>
 
           {/* CTA Novo Lançamento */}

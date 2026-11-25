@@ -11,7 +11,8 @@ import {
   Edit3,
   Trash2,
   Check,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 import { AssetPosition } from '../types';
 import {
@@ -28,6 +29,7 @@ interface AssetsTableProps {
   hideValues?: boolean;
   onEditPosition: (position: AssetPosition) => void;
   onRemovePosition: (position: AssetPosition) => Promise<void>;
+  onAnalyzeWithAi?: (ticker: string) => void;
 }
 
 const MASKED_VALUE = '••••••';
@@ -43,7 +45,8 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
   usdRate = 5.75,
   hideValues = false,
   onEditPosition,
-  onRemovePosition
+  onRemovePosition,
+  onAnalyzeWithAi
 }) => {
   const [activeTab, setActiveTab] = useState<FilterTab>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
@@ -462,6 +465,22 @@ export const AssetsTable: React.FC<AssetsTableProps> = ({
                         </div>
                       ) : (
                         <div className="inline-flex items-center gap-1">
+                          {onAnalyzeWithAi && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const raw = pos.ticker.trim().toUpperCase();
+                                const target =
+                                  pos.market === 'B3' && !raw.endsWith('.SA') ? `${raw}.SA` : raw;
+                                onAnalyzeWithAi(target);
+                              }}
+                              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-emerald-500/20 border border-indigo-500/35 hover:border-emerald-500/45 text-[11px] font-semibold text-indigo-200 hover:text-emerald-200 transition-all"
+                              title="Analisar com IA (TradingAgents)"
+                            >
+                              <Sparkles className="w-3 h-3 text-emerald-400" />
+                              <span className="hidden xl:inline">Analisar com IA</span>
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={() => onEditPosition(pos)}
