@@ -61,6 +61,9 @@ services:
       BRAPI_TOKEN: ${BRAPI_TOKEN:-${BRAPI_API_TOKEN:-}}
       BRAPI_MIN_INTERVAL_MS: ${BRAPI_MIN_INTERVAL_MS:-400}
       FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      TRADING_AGENTS_API_URL: ${TRADING_AGENTS_API_URL:-http://host.docker.internal:8000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - invest-net
 
