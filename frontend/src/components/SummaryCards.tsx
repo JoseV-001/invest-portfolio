@@ -170,7 +170,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, hideValues 
             <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-blue-400 mb-1">
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Brasil (B3)</span>
+                <span>Brasil (B3 / BRL)</span>
               </div>
               <div className="text-sm sm:text-base font-bold text-white tabular-nums">
                 {hideValues ? MASKED_BRL : formatBrl(summary.totalEquityB3Brl)}
@@ -180,11 +180,11 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary, hideValues 
               </div>
             </div>
 
-            {/* Bloco Nomad */}
+            {/* Bloco Exterior & Cripto */}
             <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
               <div className="flex items-center gap-1.5 text-[11px] font-medium text-amber-400 mb-1">
                 <Globe2 className="w-3.5 h-3.5" />
-                <span>Exterior (Nomad)</span>
+                <span>Exterior &amp; Cripto (USD)</span>
               </div>
               <div className="text-sm sm:text-base font-bold text-white tabular-nums">
                 {hideValues ? MASKED_BRL : formatBrl(summary.totalEquityNomadBrl)}

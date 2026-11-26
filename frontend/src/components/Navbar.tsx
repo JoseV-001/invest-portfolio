@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
             <p className="text-[11px] text-slate-400 hidden sm:block">
-              Consolidação Multi-Mercado • B3 (Inter) &amp; NYSE/NASDAQ (Nomad)
+              Consolidação Multi-Ativo • B3, NYSE/NASDAQ, FIIs, ETFs, Cripto &amp; Caixa
             </p>
           </div>
         </div>

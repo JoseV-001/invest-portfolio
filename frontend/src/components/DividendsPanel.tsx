@@ -91,7 +91,7 @@ export const DividendsPanel: React.FC<DividendsPanelProps> = ({
           <div>
             <h2 className="text-base font-bold text-white">Proventos &amp; Renda Passiva</h2>
             <p className="text-xs text-slate-400">
-              Consolidado de Dividendos, JCP e Amortizações (B3 e Nomad convertidos em BRL)
+              Consolidado de Dividendos, JCP e Amortizações (Ativos BRL e USD convertidos ao câmbio da data)
             </p>
           </div>
         </div>

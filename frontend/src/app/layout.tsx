@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Invest Portfolio - Gestor Consolidado B3 & Nomad',
-  description: 'Gerenciador e consolidador inteligente de carteira com B3 e Nomad',
+  title: 'Invest Portfolio - Consolidador Patrimonial Multi-Ativo & Multi-Moeda',
+  description: 'Plataforma de consolidação de investimentos (Ações, FIIs, ETFs, REITs, Cripto e Caixa em BRL e USD) com Copiloto Financeiro IA',
 };
 
 export default function RootLayout({
