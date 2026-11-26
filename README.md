@@ -1,4 +1,4 @@
-# 📊 Invest Portfolio — Plataforma de Consolidação Patrimonial Multi-Ativo & Multi-Moeda
+# Invest Portfolio — Plataforma de Consolidação Patrimonial Multi-Ativo & Multi-Moeda
 
 > **Consolidador financeiro full-stack para carteiras globais** (Brasil `B3`, Estados Unidos `NYSE`/`NASDAQ` e `Criptomoedas`), com motor de precisão contábil em `BigDecimal`, cotações e câmbio automatizados com fallback em cascata, simulador inteligente de aportes sem vendas (*No-Sell Rebalancing*) e **Copiloto Financeiro Multi-Agente com IA** ([TradingAgents Homelab](https://github.com/JoseV-001/tradingagents-homelab)).
 
@@ -12,7 +12,7 @@
 
 ---
 
-## 🎯 Visão Geral
+## Visão Geral
 
 Investidores que diversificam seu patrimônio entre corretoras brasileiras (ex.: **Banco Inter / B3**), contas internacionais nos EUA (ex.: **Nomad / NYSE & NASDAQ**) e **exchanges ou carteiras de criptoativos** enfrentam a fragmentação de dados: cada plataforma exibe apenas seu recorte local, em moedas distintas (`BRL` vs `USD`), sem visão consolidada de alocação, risco, dividendos ou evolução patrimonial.
 
@@ -33,7 +33,7 @@ O **Invest Portfolio** resolve esse problema unificando **8 classes de ativos**,
 
 ---
 
-## ✨ Funcionalidades Reais do Sistema
+## Funcionalidades Reais do Sistema
 
 ### 1. Dashboard Consolidado Multi-Moeda (`SummaryCards` & `AssetsTable`)
 - **Conversão Cambial Automática (`USD` → `BRL`):** Consolida em tempo real o patrimônio total em Reais (`BRL`), exibindo simultaneamente o valor original em `USD`, a cotação atual do dólar comercial (`USD/BRL`), o custo total investido e o lucro/prejuízo não realizado (`R$` e `%`).
@@ -75,7 +75,7 @@ O **Invest Portfolio** resolve esse problema unificando **8 classes de ativos**,
 
 ---
 
-## 🏗️ Arquitetura do Sistema
+## Arquitetura do Sistema
 
 ```mermaid
 flowchart TB
@@ -134,7 +134,7 @@ flowchart TB
 
 ---
 
-## 🛠️ Stack Tecnológica
+## Stack Tecnológica
 
 | Camada | Tecnologias |
 | :--- | :--- |
@@ -147,7 +147,7 @@ flowchart TB
 
 ---
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```text
 invest-portfolio/
@@ -185,7 +185,7 @@ invest-portfolio/
 
 ---
 
-## 🗄️ Modelo de Dados & Migrations Flyway
+## Modelo de Dados & Migrations Flyway
 
 O schema relacional é versionado automaticamente pelo **Flyway** na inicialização do backend:
 
@@ -201,7 +201,7 @@ O schema relacional é versionado automaticamente pelo **Flyway** na inicializa�
 
 ---
 
-## 🔌 Endpoints da API REST (`/api/v1`)
+## Endpoints da API REST (`/api/v1`)
 
 | Método | Endpoint | Descrição |
 | :--- | :--- | :--- |
@@ -226,7 +226,7 @@ O schema relacional é versionado automaticamente pelo **Flyway** na inicializa�
 
 ---
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### Pré-requisitos
 - **Docker** e **Docker Compose** (para execução containerizada completa), **ou**
@@ -266,7 +266,7 @@ npm run dev
 
 ---
 
-## ⚙️ Variáveis de Ambiente (`.env.example`)
+## Variáveis de Ambiente (`.env.example`)
 
 | Variável | Padrão | Descrição |
 | :--- | :--- | :--- |
